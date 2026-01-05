@@ -3,393 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Paw Paw Manager | Enterprise Suite</title>
+    <title>Le Paw Paw | Enterprise System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        :root { --teal-900: #042f2e; --orange-500: #f97316; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .sidebar-link { transition: all 0.3s ease; border-radius: 12px; margin: 4px 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; color: #94a3b8; }
-        .sidebar-link.active { background: var(--orange-500); color: white; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.4); }
-        .sidebar-link:hover:not(.active) { background: #134e4a; color: white; }
-        .card-stat { transition: transform 0.3s; }
-        .card-stat:hover { transform: translateY(-5px); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
+        .active-tab { background: #f97316 !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3); }
+        .sidebar-item { transition: all 0.2s; border-radius: 12px; margin: 4px 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; color: #94a3b8; width: 88%; text-align: left; }
+        .sidebar-item:hover:not(.active-tab) { background: #134e4a; color: white; }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden">
 
     <aside class="w-72 bg-teal-950 text-white flex flex-col shadow-2xl z-50">
-        <div class="p-8 mb-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
-                    <i class="fas fa-paw text-white text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-extrabold tracking-tight">Le Paw Paw</h1>
-                    <p class="text-[9px] tracking-[0.2em] text-teal-400 font-bold uppercase">Manager Pro</p>
-                </div>
-            </div>
+        <div class="p-8 mb-4 flex items-center gap-3">
+            <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-paw text-white text-xl"></i></div>
+            <div><h1 class="text-xl font-extrabold tracking-tight">Le Paw Paw</h1><p class="text-[9px] tracking-[0.2em] text-teal-400 font-bold uppercase">Enterprise</p></div>
         </div>
 
         <nav class="flex-grow space-y-1">
-            <button onclick="nav('dash')" class="sidebar-link w-[85%] active" id="btn-dash"><i class="fas fa-chart-pie"></i> Dashboard</button>
-            <button onclick="nav('clientes')" class="sidebar-link w-[85%]" id="btn-clientes"><i class="fas fa-users"></i> Clientes/Pets</button>
-            <button onclick="nav('agenda')" class="sidebar-link w-[85%]" id="btn-agenda"><i class="fas fa-calendar-alt"></i> Reservas Pro</button>
-            <button onclick="nav('finanzas')" class="sidebar-link w-[85%]" id="btn-finanzas"><i class="fas fa-file-invoice-dollar"></i> Finanzas</button>
-            <button onclick="nav('groomers')" class="sidebar-link w-[85%]" id="btn-groomers"><i class="fas fa-cut"></i> Staff Groomers</button>
-            <button onclick="nav('inventario')" class="sidebar-link w-[85%]" id="btn-inventario"><i class="fas fa-boxes"></i> Stock/Activos</button>
-            <button onclick="nav('admin')" class="sidebar-link w-[85%]" id="btn-admin"><i class="fas fa-user-shield"></i> Administración</button>
+            <button onclick="render('dash')" id="btn-dash" class="sidebar-item active-tab"><i class="fas fa-chart-line w-5"></i> Dashboard</button>
+            <button onclick="render('clientes')" id="btn-clientes" class="sidebar-item"><i class="fas fa-id-card w-5"></i> Clientes & Pets</button>
+            <button onclick="render('agenda')" id="btn-agenda" class="sidebar-item"><i class="fas fa-calendar-check w-5"></i> Reservas Pro</button>
+            <button onclick="render('finanzas')" id="btn-finanzas" class="sidebar-item"><i class="fas fa-wallet w-5"></i> Finanzas</button>
+            <button onclick="render('staff')" id="btn-staff" class="sidebar-item"><i class="fas fa-cut w-5"></i> Groomers</button>
+            <button onclick="render('inventario')" id="btn-inventario" class="sidebar-item"><i class="fas fa-boxes w-5"></i> Inventario/Activos</button>
+            <button onclick="render('admin')" id="btn-admin" class="sidebar-item"><i class="fas fa-user-shield w-5"></i> Administración</button>
         </nav>
 
         <div class="p-6 border-t border-teal-900/50">
-            <div class="bg-teal-900/40 p-4 rounded-2xl flex items-center gap-3">
-                <div class="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-xs font-bold">AD</div>
-                <div>
-                    <p class="text-xs font-bold">Admin Master</p>
-                    <p class="text-[10px] text-teal-400">Control Total</p>
-                </div>
+            <div class="bg-teal-900/40 p-4 rounded-2xl">
+                <p class="text-[10px] text-teal-400 font-bold uppercase mb-1">Rol Actual</p>
+                <select onchange="updateRole(this.value)" id="roleSelector" class="bg-transparent text-white text-xs font-bold outline-none w-full">
+                    <option value="ADMIN" class="bg-teal-950">Administrador</option>
+                    <option value="GROOMER" class="bg-teal-950">Groomer Staff</option>
+                </select>
             </div>
         </div>
     </aside>
 
-    <main class="flex-grow flex flex-col h-full overflow-hidden relative">
-        <header class="h-20 bg-white/80 glass border-b border-slate-200 px-10 flex justify-between items-center z-40">
-            <h2 id="viewTitle" class="text-2xl font-black text-slate-800 tracking-tight italic uppercase">Dashboard</h2>
-            <div class="flex items-center gap-4">
-                <div id="auditLog" class="text-[10px] bg-slate-100 px-3 py-1 rounded text-slate-500 font-mono hidden md:block">
-                    AUDIT: SYS_READY | 2026-01-04
-                </div>
-                <button onclick="nav('agenda')" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-orange-500/20 transition-all active:scale-95">+ Nueva Cita</button>
-            </div>
+    <main class="flex-grow flex flex-col h-full overflow-hidden">
+        <header class="h-20 bg-white border-b border-slate-200 px-10 flex justify-between items-center shrink-0">
+            <h2 id="viewTitle" class="text-2xl font-black text-slate-800 uppercase tracking-tighter">Dashboard</h2>
+            <div id="topAudit" class="text-[10px] font-mono text-slate-400 bg-slate-100 px-3 py-1 rounded">SYS_LOG: WAITING...</div>
         </header>
 
-        <section id="viewport" class="p-10 overflow-y-auto flex-grow bg-[#f8fafc]"></section>
+        <section id="viewport" class="p-10 overflow-y-auto flex-grow bg-slate-50"></section>
     </main>
 
     <script>
-        // --- 🧠 CORE ENGINE: LE PAW PAW MANAGER ---
-        const USER_ROLE = 'ADMIN'; // Roles: ADMIN, GROOMER, CLIENTE
-        
+        // --- 🧠 CORE DATA & ENGINE ---
+        let currentRole = 'ADMIN';
         const DB = {
-            config: JSON.parse(localStorage.getItem('lp_config')) || { business: 'Le Paw Paw Spa', fee: 15 },
-            clientes: JSON.parse(localStorage.getItem('lp_clientes')) || [],
-            mascotas: JSON.parse(localStorage.getItem('lp_mascotas')) || [],
+            mascotas: JSON.parse(localStorage.getItem('lp_pets')) || [],
             citas: JSON.parse(localStorage.getItem('lp_citas')) || [],
-            finanzas: JSON.parse(localStorage.getItem('lp_finanzas')) || [],
-            staff: JSON.parse(localStorage.getItem('lp_staff')) || [],
-            stock: JSON.parse(localStorage.getItem('lp_stock')) || [],
-            auditoria: JSON.parse(localStorage.getItem('lp_audit')) || []
+            finanzas: JSON.parse(localStorage.getItem('lp_fin')) || [],
+            staff: JSON.parse(localStorage.getItem('lp_staff')) || [{nombre: 'Groomer Principal', especialidad: 'Cortes', comision: 15, id: 1}],
+            stock: JSON.parse(localStorage.getItem('lp_stock')) || [{nombre: 'Shampoo Pro', cant: 10, min: 2, id: 1}],
+            activos: JSON.parse(localStorage.getItem('lp_activos')) || [{nombre: 'Secador Industrial', estado: 'Excelente', id: 1}],
+            audit: []
         };
 
-        function saveDB() {
-            Object.keys(DB).forEach(key => localStorage.setItem(`lp_${key}`, JSON.stringify(DB[key])));
-            updateAudit('SAVE_DATABASE', 'SYSTEM');
+        function save() {
+            localStorage.setItem('lp_pets', JSON.stringify(DB.mascotas));
+            localStorage.setItem('lp_citas', JSON.stringify(DB.citas));
+            localStorage.setItem('lp_fin', JSON.stringify(DB.finanzas));
+            localStorage.setItem('lp_staff', JSON.stringify(DB.staff));
+            localStorage.setItem('lp_stock', JSON.stringify(DB.stock));
+            localStorage.setItem('lp_activos', JSON.stringify(DB.activos));
+            log('DB_SYNC', 'SUCCESS');
         }
 
-        function updateAudit(action, entity) {
-            const entry = `${new Date().toISOString()} | ${USER_ROLE} | ${action} | ${entity}`;
-            DB.auditoria.unshift(entry);
-            if(DB.auditoria.length > 50) DB.auditoria.pop();
-            const log = document.getElementById('auditLog');
-            if(log) log.innerText = `LAST_ACTION: ${action}`;
+        function log(action, detail) {
+            const entry = `${new Date().toLocaleTimeString()} | ${action} | ${detail}`;
+            DB.audit.unshift(entry);
+            document.getElementById('topAudit').innerText = `LOG: ${action} > ${detail}`;
         }
 
-        // --- 🔁 NAVIGATION ENGINE ---
-        function nav(view) {
-            const viewport = document.getElementById('viewport');
-            const title = document.getElementById('viewTitle');
-            title.innerText = view;
-
-            // Sidebar Active UI
-            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(`btn-${view}`)?.classList.add('active');
-
-            if(view === 'dash') renderDash(viewport);
-            if(view === 'clientes') renderClientes(viewport);
-            if(view === 'agenda') renderAgenda(viewport);
-            if(view === 'finanzas') renderFinanzas(viewport);
-            if(view === 'admin') renderAdmin(viewport);
+        function updateRole(val) {
+            currentRole = val;
+            log('ROLE_CHANGE', val);
+            render(lastView);
         }
 
-        // --- 📊 MODULE: DASHBOARD ---
+        let lastView = 'dash';
+
+        // --- 🎨 RENDER ENGINE ---
+        function render(view) {
+            lastView = view;
+            const v = document.getElementById('viewport');
+            const t = document.getElementById('viewTitle');
+            t.innerText = view;
+
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active-tab'));
+            document.getElementById(`btn-${view}`).classList.add('active-tab');
+
+            if(view === 'dash') renderDash(v);
+            if(view === 'clientes') renderClientes(v);
+            if(view === 'agenda') renderAgenda(v);
+            if(view === 'finanzas') renderFinanzas(v);
+            if(view === 'staff') renderStaff(v);
+            if(view === 'inventario') renderInventario(v);
+            if(view === 'admin') renderAdmin(v);
+        }
+
+        // --- 📊 DASHBOARD ---
         function renderDash(v) {
-            const ingresos = DB.finanzas.filter(f => f.tipo === 'Ingreso').reduce((a, b) => a + Number(b.monto), 0);
+            const ingresos = DB.finanzas.filter(f => f.tipo === 'Ingreso').reduce((a,b) => a + Number(b.monto), 0);
             v.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 card-stat">
-                        <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-2xl flex items-center justify-center mb-4"><i class="fas fa-dog text-xl"></i></div>
-                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Pets Activos</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-teal-500">
+                        <p class="text-xs font-bold text-slate-400 uppercase">Total Pets</p>
                         <p class="text-4xl font-black text-slate-800">${DB.mascotas.length}</p>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 card-stat">
-                        <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mb-4"><i class="fas fa-calendar-check text-xl"></i></div>
-                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Citas Hoy</h3>
-                        <p class="text-4xl font-black text-slate-800">${DB.citas.filter(c => c.estado === 'Confirmada').length}</p>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-orange-500">
+                        <p class="text-xs font-bold text-slate-400 uppercase">Citas Hoy</p>
+                        <p class="text-4xl font-black text-slate-800">${DB.citas.length}</p>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 card-stat">
-                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-4"><i class="fas fa-vault text-xl"></i></div>
-                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Caja Mensual</h3>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-green-500">
+                        <p class="text-xs font-bold text-slate-400 uppercase">Caja Total</p>
                         <p class="text-4xl font-black text-slate-800">$${ingresos}</p>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 card-stat">
-                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-4"><i class="fas fa-user-md text-xl"></i></div>
-                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Groomers</h3>
-                        <p class="text-4xl font-black text-slate-800">${DB.staff.length || 1}</p>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-red-500">
+                        <p class="text-xs font-bold text-slate-400 uppercase">Alertas Stock</p>
+                        <p class="text-4xl font-black text-slate-800">${DB.stock.filter(s => s.cant <= s.min).length}</p>
                     </div>
                 </div>
             `;
         }
 
-        // --- 🐾 MODULE: CLIENTES & PETS ---
+        // --- 👥 CLIENTES & PETS ---
         function renderClientes(v) {
             v.innerHTML = `
-                <div class="flex flex-col gap-8">
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                        <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2"><i class="fas fa-plus-circle text-orange-500"></i> ADMISIÓN DE PACIENTE</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase">Nombre Mascota</label>
-                                <input id="pName" type="text" class="w-full bg-slate-50 border-none p-3 rounded-xl focus:ring-2 ring-orange-500 transition-all outline-none">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase">Raza</label>
-                                <input id="pRaza" type="text" class="w-full bg-slate-50 border-none p-3 rounded-xl outline-none">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase">Propietario</label>
-                                <input id="pOwner" type="text" class="w-full bg-slate-50 border-none p-3 rounded-xl outline-none">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase">Dificultad</label>
-                                <select id="pDiff" class="w-full bg-slate-50 border-none p-3 rounded-xl outline-none">
-                                    <option>Baja</option><option>Media</option><option>Alta (Manejo Especial)</option>
-                                </select>
-                            </div>
-                            <div class="md:col-span-3 space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase">Alertas Médicas / Comportamiento</label>
-                                <textarea id="pNotes" class="w-full bg-slate-50 border-none p-3 rounded-xl h-12 outline-none"></textarea>
-                            </div>
-                            <button onclick="createPet()" class="bg-teal-900 text-white font-bold rounded-xl h-12 self-end shadow-xl shadow-teal-900/20 hover:bg-teal-800 transition-all">REGISTRAR EN SISTEMA</button>
+                <div class="bg-white p-8 rounded-3xl shadow-sm mb-8">
+                    <h3 class="font-black text-slate-800 mb-6 uppercase tracking-tighter">Nueva Mascota</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input id="pName" placeholder="Nombre Mascota" class="p-4 bg-slate-50 rounded-xl outline-none ring-1 ring-slate-200">
+                        <input id="pRaza" placeholder="Raza" class="p-4 bg-slate-50 rounded-xl outline-none ring-1 ring-slate-200">
+                        <input id="pOwner" placeholder="Dueño" class="p-4 bg-slate-50 rounded-xl outline-none ring-1 ring-slate-200">
+                        <input id="pWA" placeholder="WA (ej: 57300...)" class="p-4 bg-slate-50 rounded-xl outline-none ring-1 ring-slate-200">
+                        <textarea id="pNotas" placeholder="Alertas Médicas/Comportamiento" class="md:col-span-3 p-4 bg-slate-50 rounded-xl outline-none ring-1 ring-slate-200"></textarea>
+                        <button onclick="addPet()" class="bg-teal-900 text-white font-black rounded-xl">REGISTRAR</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    ${DB.mascotas.map((m, i) => `
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border-l-8 border-orange-500">
+                            <h4 class="text-xl font-black text-slate-800">${m.nombre}</h4>
+                            <p class="text-xs font-bold text-teal-600 mb-2">${m.raza}</p>
+                            <p class="text-xs mb-4">👤 Propietario: <b>${m.duenio}</b></p>
+                            <div class="bg-red-50 p-3 rounded-xl text-[11px] text-red-700 font-bold">⚠️ ${m.notas || 'Sin alertas'}</div>
+                            ${currentRole === 'ADMIN' ? `<button onclick="delPet(${i})" class="mt-4 text-red-300 text-xs font-bold hover:text-red-600 uppercase">Eliminar Registro</button>` : ''}
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        ${DB.mascotas.map((m, i) => `
-                            <div class="bg-white p-6 rounded-3xl shadow-sm border-l-8 border-orange-500 hover:shadow-xl transition-all group">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400 overflow-hidden">
-                                        <i class="fas fa-dog text-2xl"></i>
-                                    </div>
-                                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                        <button class="w-8 h-8 bg-slate-100 rounded-lg text-slate-400 hover:text-teal-600"><i class="fas fa-edit"></i></button>
-                                        <button onclick="deletePet(${i})" class="w-8 h-8 bg-red-50 rounded-lg text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </div>
-                                <h4 class="text-xl font-black text-slate-800">${m.nombre}</h4>
-                                <p class="text-xs font-bold text-teal-600 uppercase mb-3">${m.raza}</p>
-                                <div class="space-y-2 border-t pt-3 border-slate-50">
-                                    <p class="text-xs">👤 <span class="text-slate-500">DUEÑO:</span> <span class="font-bold font-slate-700">${m.duenio}</span></p>
-                                    <div class="bg-orange-50 p-3 rounded-xl">
-                                        <p class="text-[10px] font-black text-orange-600 uppercase mb-1">⚠️ ALERTAS CRÍTICAS</p>
-                                        <p class="text-[11px] text-orange-800 leading-tight">${m.notas || 'Sin restricciones reportadas.'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
+                    `).join('')}
                 </div>
             `;
         }
 
-        function createPet() {
+        function addPet() {
             const pet = {
                 nombre: document.getElementById('pName').value,
                 raza: document.getElementById('pRaza').value,
                 duenio: document.getElementById('pOwner').value,
-                dificultad: document.getElementById('pDiff').value,
-                notas: document.getElementById('pNotes').value,
-                id: Date.now()
+                wa: document.getElementById('pWA').value,
+                notas: document.getElementById('pNotas').value
             };
-            if(!pet.nombre || !pet.duenio) return alert('CAMPOS OBLIGATORIOS FALTANTES');
-            DB.mascotas.unshift(pet);
-            saveDB();
-            updateAudit('CREATE_PET', pet.nombre);
-            nav('clientes');
+            if(!pet.nombre) return alert('Nombre Requerido');
+            DB.mascotas.push(pet); save(); render('clientes');
         }
 
-        function deletePet(index) {
-            if(confirm('¿ESTÁ SEGURO? ESTA ACCIÓN SE AUDITARÁ.')) {
-                updateAudit('DELETE_PET', DB.mascotas[index].nombre);
-                DB.mascotas.splice(index, 1);
-                saveDB();
-                nav('clientes');
-            }
+        function delPet(i) {
+            if(confirm('Eliminar?')) { DB.mascotas.splice(i, 1); save(); render('clientes'); }
         }
 
-        // --- 📅 MODULE: RESERVAS PRO ---
+        // --- 📅 AGENDA PRO (SISTEMA DE CONSUMO) ---
         function renderAgenda(v) {
             v.innerHTML = `
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-10">
-                        <h3 class="text-xl font-black text-slate-800">AGENDA MAESTRA</h3>
-                        <div class="flex bg-slate-100 p-1 rounded-xl">
-                            <button class="px-4 py-2 bg-white rounded-lg shadow-sm text-xs font-bold">HOY</button>
-                            <button class="px-4 py-2 text-xs font-bold text-slate-400">SEMANA</button>
-                            <button class="px-4 py-2 text-xs font-bold text-slate-400">MES</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50 p-6 rounded-2xl mb-10 border border-slate-200 border-dashed">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <select id="cPet" class="p-3 rounded-xl border-none ring-1 ring-slate-200 outline-none">
-                                <option>Seleccionar Mascota...</option>
-                                ${DB.mascotas.map(m => `<option>${m.nombre}</option>`).join('')}
-                            </select>
-                            <input type="date" id="cDate" class="p-3 rounded-xl border-none ring-1 ring-slate-200 outline-none">
-                            <input type="time" id="cTime" class="p-3 rounded-xl border-none ring-1 ring-slate-200 outline-none">
-                            <select id="cGroomer" class="p-3 rounded-xl border-none ring-1 ring-slate-200 outline-none">
-                                <option>Groomer Asignado...</option>
-                                <option>Master Senior</option>
-                                <option>Junior B</option>
-                            </select>
-                            <button onclick="createCita()" class="md:col-span-4 bg-orange-500 text-white font-black p-3 rounded-xl shadow-lg shadow-orange-500/20">CONFIRMAR Y AGENDAR CITA</button>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3">
-                        ${DB.citas.map((c, i) => `
-                            <div class="bg-white p-5 rounded-2xl border border-slate-100 flex items-center justify-between hover:border-orange-500 transition-all">
-                                <div class="flex items-center gap-6">
-                                    <div class="text-center bg-slate-50 px-4 py-2 rounded-xl">
-                                        <p class="text-[9px] font-black text-slate-400 uppercase">Hora</p>
-                                        <p class="text-sm font-black text-slate-700">${c.hora}</p>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-black text-slate-800">${c.mascota}</h4>
-                                        <p class="text-xs font-bold text-teal-600">${c.fecha}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-[9px] font-black rounded-full uppercase italic">${c.estado}</span>
-                                    <button onclick="sendWA('5730000000', 'Confirmación Le Paw Paw para ${c.mascota}')" class="text-teal-600 bg-teal-50 px-3 py-2 rounded-xl text-xs font-bold"><i class="fab fa-whatsapp"></i> RECORDAR</button>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        function createCita() {
-            const c = {
-                mascota: document.getElementById('cPet').value,
-                fecha: document.getElementById('cDate').value,
-                hora: document.getElementById('cTime').value,
-                groomer: document.getElementById('cGroomer').value,
-                estado: 'Confirmada',
-                eventDate: new Date(document.getElementById('cDate').value).getTime()
-            };
-            
-            // Regla: Solo admin puede crear citas pasadas
-            const hoy = new Date().setHours(0,0,0,0);
-            if(c.eventDate < hoy && USER_ROLE !== 'ADMIN') return alert('BLOQUEO: Solo el administrador puede registrar citas históricas.');
-
-            DB.citas.unshift(c);
-            saveDB();
-            updateAudit('CREATE_APPOINTMENT', c.mascota);
-            nav('agenda');
-        }
-
-        // --- 💰 MODULE: FINANZAS (REGISTRO HISTÓRICO) ---
-        function renderFinanzas(v) {
-            v.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                        <h3 class="text-lg font-black text-slate-800 mb-6">MOVIMIENTO DE CAJA</h3>
-                        <div class="space-y-4">
-                            <input id="fDesc" type="text" placeholder="Concepto (Ej: Pago Baño Husky)" class="w-full bg-slate-50 p-4 rounded-xl outline-none ring-1 ring-slate-100">
-                            <div class="grid grid-cols-2 gap-4">
-                                <input id="fMonto" type="number" placeholder="Monto $" class="bg-slate-50 p-4 rounded-xl outline-none ring-1 ring-slate-100">
-                                <select id="fTipo" class="bg-slate-50 p-4 rounded-xl outline-none ring-1 ring-slate-100 font-bold">
-                                    <option class="text-green-600">Ingreso</option>
-                                    <option class="text-red-600">Gasto</option>
-                                </select>
-                            </div>
-                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                                <p class="text-[10px] font-black text-blue-600 mb-2 uppercase">Override de Fecha (Uso Histórico)</p>
-                                <input type="date" id="fEventDate" class="w-full bg-white p-2 rounded-lg border-none text-xs">
-                            </div>
-                            <button onclick="createFinanza()" class="w-full bg-teal-900 text-white font-black p-4 rounded-2xl shadow-xl">PROCESAR TRANSACCIÓN</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                        <h3 class="text-lg font-black text-slate-800 mb-6 font-mono tracking-tighter">LIBRO DIARIO AUDITADO</h3>
-                        <div class="space-y-2 h-[400px] overflow-y-auto pr-4">
-                            ${DB.finanzas.map(f => `
-                                <div class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border-r-4 ${f.tipo === 'Ingreso' ? 'border-green-500' : 'border-red-500'}">
-                                    <div>
-                                        <p class="text-xs font-black text-slate-800">${f.desc}</p>
-                                        <p class="text-[9px] font-bold text-slate-400 uppercase italic">${f.date}</p>
-                                    </div>
-                                    <p class="font-black ${f.tipo === 'Ingreso' ? 'text-green-600' : 'text-red-600'}">${f.tipo === 'Ingreso' ? '+' : '-'} $${f.monto}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function createFinanza() {
-            const f = {
-                desc: document.getElementById('fDesc').value,
-                monto: document.getElementById('fMonto').value,
-                tipo: document.getElementById('fTipo').value,
-                date: document.getElementById('fEventDate').value || new Date().toISOString().split('T')[0]
-            };
-            if(!f.desc || !f.monto) return;
-            DB.finanzas.unshift(f);
-            saveDB();
-            updateAudit('FINANCE_ENTRY', f.desc);
-            nav('finanzas');
-        }
-
-        // --- ⚙️ MODULE: ADMIN & AUDIT ---
-        function renderAdmin(v) {
-            v.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div class="bg-white p-8 rounded-3xl shadow-sm">
-                        <h3 class="text-lg font-black mb-6">SISTEMA DE AUDITORÍA (BLACKBOX)</h3>
-                        <div class="bg-slate-900 text-green-400 p-6 rounded-2xl font-mono text-[10px] h-96 overflow-y-auto shadow-inner">
-                            ${DB.auditoria.map(a => `> ${a}<br>`).join('')}
-                        </div>
-                    </div>
-                    <div class="bg-teal-900 p-8 rounded-3xl text-white shadow-2xl">
-                        <h3 class="text-lg font-black mb-6 text-orange-400 uppercase">Seguridad del Sistema</h3>
-                        <div class="space-y-6">
-                            <div class="flex justify-between items-center border-b border-teal-800 pb-4">
-                                <div><p class="font-bold">Mantenimiento de Datos</p><p class="text-[10px] text-teal-400">Elimina el almacenamiento local de este dispositivo.</p></div>
-                                <button onclick="localStorage.clear(); location.reload();" class="bg-red-500 text-white px-4 py-2 rounded-lg text-xs font-black">WIPE DATA</button>
-                            </div>
-                            <div class="flex justify-between items-center border-b border-teal-800 pb-4">
-                                <div><p class="font-bold">Backup de Emergencia</p><p class="text-[10px] text-teal-400">Exporta la base de datos en formato JSON.</p></div>
-                                <button class="bg-teal-600 px-4 py-2 rounded-lg text-xs font-black">EXPORT JSON</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function sendWA(tel, msg) {
-            window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        // INIT
-        nav('dash');
-    </script>
-</body>
-</html>
+                <div class="bg-white p-8 rounded-3
